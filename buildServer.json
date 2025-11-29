@@ -1,0 +1,19 @@
+{
+	"name": "xcode build server",
+	"version": "0.2",
+	"bspVersion": "2.0",
+	"languages": [
+		"c",
+		"cpp",
+		"objective-c",
+		"objective-cpp",
+		"swift"
+	],
+	"argv": [
+		"/opt/homebrew/bin/xcode-build-server"
+	],
+	"workspace": "/Users/dimillian/Documents/Dev/RetroDiffusionApp/RetroDiffusionApp.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/dimillian/Library/Developer/Xcode/DerivedData/RetroDiffusionApp-brijcoxsgtywdlftqqekuautofkk",
+	"scheme": "RetroDiffusionApp",
+	"kind": "xcode"
+}
