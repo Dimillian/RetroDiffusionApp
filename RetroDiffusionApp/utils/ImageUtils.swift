@@ -9,8 +9,9 @@ import UIKit
 
 struct ImageUtils {
   /// Resizes an image to fit within the specified maximum dimension while maintaining aspect ratio.
-  /// Stateless utility to avoid cross-actor hops; call from a background task when doing heavy work.
-  nonisolated func resizeImage(_ image: UIImage, maxDimension: Int) -> UIImage {
+  /// Marked @concurrent to offload to the global executor while inheriting caller cancellation.
+  @concurrent
+  func resizeImage(_ image: UIImage, maxDimension: Int) async -> UIImage {
     let size = image.size
     let maxSize = max(size.width, size.height)
 
@@ -31,7 +32,8 @@ struct ImageUtils {
   }
 
   /// Converts a UIImage to a base64-encoded RGB string (removes transparency).
-  nonisolated func imageToBase64RGB(_ image: UIImage) -> String? {
+  @concurrent
+  func imageToBase64RGB(_ image: UIImage) async -> String? {
     guard let cgImage = image.cgImage else { return nil }
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()

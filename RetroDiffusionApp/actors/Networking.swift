@@ -62,19 +62,14 @@ actor Networking {
     print("🔵 [Pixelate] Original image size: \(image.size.width)x\(image.size.height)")
 
     // Resize image to fit within API limits (max 256x256)
-    let resizedImage = await Task.detached(priority: .userInitiated) {
-      ImageUtils().resizeImage(image, maxDimension: 256)
-    }.value
+        let resizedImage = await ImageUtils().resizeImage(image, maxDimension: 256)
     print("🔵 [Pixelate] Resized image size: \(resizedImage.size.width)x\(resizedImage.size.height)")
 
     // Convert UIImage to base64 RGB (no transparency)
-    let base64Image = await Task.detached(priority: .utility) {
-      ImageUtils().imageToBase64RGB(resizedImage)
-    }.value
-    guard let base64Image else {
-      print("❌ [Pixelate] Failed to convert image to base64")
-      throw NetworkingError.imageConversionFailed
-    }
+        guard let base64Image = await ImageUtils().imageToBase64RGB(resizedImage) else {
+            print("❌ [Pixelate] Failed to convert image to base64")
+            throw NetworkingError.imageConversionFailed
+        }
 
     let base64Length = base64Image.count
 
@@ -195,17 +190,12 @@ actor Networking {
 
   func checkPixelateCost(_ image: UIImage) async throws -> Double {
     // Resize image to fit within API limits (max 256x256)
-    let resizedImage = await Task.detached(priority: .userInitiated) {
-      ImageUtils().resizeImage(image, maxDimension: 256)
-    }.value
+        let resizedImage = await ImageUtils().resizeImage(image, maxDimension: 256)
 
-    // Convert UIImage to base64 RGB (no transparency)
-    let base64Image = await Task.detached(priority: .utility) {
-      ImageUtils().imageToBase64RGB(resizedImage)
-    }.value
-    guard let base64Image else {
-      throw NetworkingError.imageConversionFailed
-    }
+        // Convert UIImage to base64 RGB (no transparency)
+        guard let base64Image = await ImageUtils().imageToBase64RGB(resizedImage) else {
+            throw NetworkingError.imageConversionFailed
+        }
 
     let request = InferenceRequest(
       width: Int(resizedImage.size.width),
