@@ -11,16 +11,39 @@ import UIKit
 @Observable
 class Networking {
     private let baseURL = "https://api.retrodiffusion.ai/v1"
-    private let apiKey: String
+    private var apiKey: String
 
     var isLoading = false
     var errorMessage: String?
 
     init() {
-        guard let key = ConfigLoader.loadAPIKey() else {
-            fatalError("API_KEY not found in Config.plist. Please create Config.plist with API_KEY.")
+        guard let resolvedKey = Self.resolveAPIKey() else {
+            fatalError("API_KEY not found. Please set a custom API key in Settings or create Config.plist with API_KEY.")
         }
-        self.apiKey = key
+        self.apiKey = resolvedKey
+    }
+
+    func updateAPIKey(_ newKey: String?) {
+        if let newKey = newKey, !newKey.isEmpty {
+            self.apiKey = newKey
+            return
+        }
+
+        if let resolvedKey = Self.resolveAPIKey() {
+            self.apiKey = resolvedKey
+        } else {
+            self.apiKey = ""
+        }
+    }
+
+    /// Resolves the API key by checking UserDefaults first, then falling back to Config.plist
+    private static func resolveAPIKey() -> String? {
+        if let customKey = UserDefaults.standard.string(forKey: Constants.UserDefaultsKeys.customAPIKey),
+           !customKey.isEmpty {
+            return customKey
+        }
+
+        return ConfigLoader.loadAPIKey()
     }
 
     func pixelateImage(_ image: UIImage) async throws -> UIImage {
