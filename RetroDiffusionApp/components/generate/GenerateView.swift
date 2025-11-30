@@ -107,24 +107,8 @@ struct GenerateView: View {
                         }
                     }
                 }
-
-                if !prompt.isEmpty {
-                    Section {
-                        VStack(spacing: 20) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 60))
-                                .foregroundColor(.secondary)
-
-                            Text("Enter a prompt and select a model style to generate pixel art")
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
-                    }
-                }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Generate")
             .onChange(of: prompt) { oldValue, newValue in
                 if !newValue.isEmpty {
