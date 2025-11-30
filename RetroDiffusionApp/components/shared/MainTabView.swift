@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Environment(GenerationQueue.self) private var generationQueue
+
     var body: some View {
         TabView {
             PixelateView()
@@ -29,6 +31,9 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .tabViewBottomAccessory {
+            QueueAccessoryView()
         }
     }
 }

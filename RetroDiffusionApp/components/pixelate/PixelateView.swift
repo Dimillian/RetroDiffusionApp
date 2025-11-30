@@ -17,7 +17,6 @@ struct PixelateView: View {
     @State private var selectedImage: UIImage?
     @State private var cost: Double?
     @State private var checkingCost = false
-    @State private var showingEnqueueSuccess = false
 
     var body: some View {
         NavigationStack {
@@ -57,11 +56,6 @@ struct PixelateView: View {
                 Task {
                     await loadImage(from: newValue)
                 }
-            }
-            .alert("Queued!", isPresented: $showingEnqueueSuccess) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text("Pixelation task has been added to the queue. Check the Library tab to see progress.")
             }
         }
     }
@@ -106,11 +100,9 @@ struct PixelateView: View {
 
         generationQueue.enqueuePixelate(image: image)
 
-        // Clear selection and show success
         selectedImage = nil
         selectedItem = nil
         cost = nil
-        showingEnqueueSuccess = true
     }
 
     private func clearSelection() {

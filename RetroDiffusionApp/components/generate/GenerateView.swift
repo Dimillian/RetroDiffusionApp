@@ -19,7 +19,6 @@ struct GenerateView: View {
     @State private var height: Int = 256
     @State private var cost: Double?
     @State private var checkingCost = false
-    @State private var showingEnqueueSuccess = false
     @State private var costCheckTask: Task<Void, Never>?
 
     private var availableModels: [RetroDiffusionModel] {
@@ -128,11 +127,6 @@ struct GenerateView: View {
                 }
             }
             .navigationTitle("Generate")
-            .alert("Queued!", isPresented: $showingEnqueueSuccess) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text("Generation task has been added to the queue. Check the Library tab to see progress.")
-            }
             .onChange(of: prompt) { oldValue, newValue in
                 if !newValue.isEmpty {
                     debouncedCheckCost()
@@ -245,10 +239,8 @@ struct GenerateView: View {
             height: validHeight
         )
 
-        // Clear form and show success
         prompt = ""
         cost = nil
-        showingEnqueueSuccess = true
     }
 }
 
