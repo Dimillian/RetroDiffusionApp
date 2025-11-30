@@ -9,7 +9,6 @@ import SwiftUI
 
 struct GenerateView: View {
     @Environment(NetworkClient.self) private var networking
-    @Environment(LibraryManager.self) private var libraryManager
     @Environment(GenerationQueue.self) private var generationQueue
 
     @State private var selectedCategory: ModelCategory = .rdFast
@@ -247,6 +246,5 @@ struct GenerateView: View {
 #Preview {
     GenerateView()
         .environment(NetworkClient())
-        .environment(LibraryManager())
         .environment(GenerationQueue())
 }

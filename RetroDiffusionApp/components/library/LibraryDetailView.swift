@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LibraryDetailView: View {
     let libraryImage: LibraryImage
-    @Environment(LibraryManager.self) private var libraryManager
+    @Environment(LibraryClient.self) private var libraryClient
     @State private var image: UIImage?
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
@@ -103,7 +103,7 @@ struct LibraryDetailView: View {
         .toolbarColorScheme(.dark, for: .navigationBar)
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            image = libraryManager.loadImage(for: libraryImage)
+            image = await libraryClient.loadImage(for: libraryImage)
         }
     }
 }
@@ -116,5 +116,5 @@ struct LibraryDetailView: View {
             model: "rd_fast__default"
         )
     )
-    .environment(LibraryManager())
+    .environment(LibraryClient())
 }

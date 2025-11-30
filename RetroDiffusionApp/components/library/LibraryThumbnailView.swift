@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct LibraryThumbnailView: View {
-    @Environment(LibraryManager.self) private var libraryManager
+    @Environment(LibraryClient.self) private var libraryClient
     let libraryImage: LibraryImage
+    var onImageLoaded: (UIImage?) -> Void = { _ in }
     @State private var image: UIImage?
 
     var body: some View {
@@ -30,7 +31,11 @@ struct LibraryThumbnailView: View {
             }
         }
         .task {
-            image = libraryManager.loadImage(for: libraryImage)
+            let loaded = await libraryClient.loadImage(for: libraryImage)
+            await MainActor.run {
+                image = loaded
+                onImageLoaded(loaded)
+            }
         }
     }
 }

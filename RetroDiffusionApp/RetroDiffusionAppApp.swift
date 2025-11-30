@@ -10,17 +10,17 @@ import SwiftUI
 @main
 struct RetroDiffusionAppApp: App {
     @State private var networking = NetworkClient()
-    @State private var libraryManager = LibraryManager()
+    @State private var libraryClient = LibraryClient()
     @State private var generationQueue = GenerationQueue()
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
                 .environment(networking)
-                .environment(libraryManager)
+                .environment(libraryClient)
                 .environment(generationQueue)
                 .onAppear {
-                    generationQueue.setDependencies(networkClient: networking, libraryManager: libraryManager)
+                    generationQueue.setDependencies(networkClient: networking, libraryClient: libraryClient)
                 }
         }
     }

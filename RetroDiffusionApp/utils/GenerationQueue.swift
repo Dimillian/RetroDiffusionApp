@@ -30,11 +30,11 @@ class GenerationQueue {
     }
 
     private var networkClient: NetworkClient?
-    private var libraryManager: LibraryManager?
+    private var libraryClient: LibraryClient?
 
-    func setDependencies(networkClient: NetworkClient, libraryManager: LibraryManager) {
+    func setDependencies(networkClient: NetworkClient, libraryClient: LibraryClient) {
         self.networkClient = networkClient
-        self.libraryManager = libraryManager
+        self.libraryClient = libraryClient
     }
 
   
@@ -127,10 +127,10 @@ class GenerationQueue {
         task.state = .completed(image)
         tasks[index] = task
 
-        if let libraryManager = libraryManager {
+        if let libraryClient = libraryClient {
             switch task.type {
             case .generate:
-                libraryManager.save(
+                await libraryClient.save(
                     image: image,
                     prompt: task.prompt,
                     model: task.model?.rawValue,
@@ -138,7 +138,7 @@ class GenerationQueue {
                     height: task.height
                 )
             case .pixelate:
-                libraryManager.save(image: image)
+                await libraryClient.save(image: image)
             }
         }
     }

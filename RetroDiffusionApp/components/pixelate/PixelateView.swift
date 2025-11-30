@@ -10,7 +10,6 @@ import PhotosUI
 
 struct PixelateView: View {
     @Environment(NetworkClient.self) private var networking
-    @Environment(LibraryManager.self) private var libraryManager
     @Environment(GenerationQueue.self) private var generationQueue
 
     @State private var selectedItem: PhotosPickerItem?
@@ -116,6 +115,5 @@ struct PixelateView: View {
 #Preview {
     PixelateView()
         .environment(NetworkClient())
-        .environment(LibraryManager())
         .environment(GenerationQueue())
 }
