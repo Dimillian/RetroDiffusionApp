@@ -1,6 +1,6 @@
 # RetroDiffusion iOS App
 
-A SwiftUI iOS app for generating and pixelating images using the RetroDiffusion API.
+A SwiftUI iOS app for generating and pixelating images using the RetroDiffusion API with modern Swift 6.2 concurrency and an actor-based architecture.
 
 ## Features
 
@@ -12,6 +12,9 @@ A SwiftUI iOS app for generating and pixelating images using the RetroDiffusion 
   - Model selection with 30+ styles (RD_PRO, RD_FAST, RD_PLUS)
   - Customizable image dimensions
   - Save generated images to your photo library
+- **Library**: Persist generated/pixelated images in a SQLite-backed store with paging for large collections
+  - Async loading off the main thread via actors
+  - Lazy loading/pagination in the grid for smoother scrolling with large libraries
 
 ## Setup
 
@@ -44,12 +47,13 @@ A SwiftUI iOS app for generating and pixelating images using the RetroDiffusion 
 
 ## Architecture
 
-- **SwiftUI**: Fully SwiftUI-based UI with component-based architecture
-- **@Observable**: Uses the `@Observable` macro for environment objects (Networking service)
-- **Local State**: View state is kept local in views, not in environment objects
-- **Environment Injection**: Services are initialized in the app entry point and injected via `@Environment`
-- **Component-Based**: Views are broken down into reusable, focused components
-- **Separation of Concerns**: Clear separation between networking, models, utilities, and UI components
+- **Swift 6.2 Concurrency**: Heavy work runs on dedicated actors (networking, image processing, library store)
+- **Actor-backed services**:
+  - `Networking` actor for API calls, wrapped by a `NetworkClient` (`@MainActor @Observable`) for SwiftUI
+  - `ImageUtils` and `ImageSaver` actors to keep CPU and Photos writes off the main thread
+  - `LibraryStore` actor backed by SQLite for scalable persistence; `LibraryClient` (`@MainActor @Observable`) handles paging and caching for the UI
+- **SwiftUI + @Observable**: Environment-injected clients; UI state remains local to views where possible
+- **Component-Based UI**: Reusable SwiftUI components for generation, pixelation, library, and shared controls
 
 ## API Documentation
 
@@ -64,30 +68,29 @@ RetroDiffusionApp/
 ├── Config.plist                  # API key configuration (gitignored)
 ├── Assets.xcassets/              # App assets
 │
-├── components/                   # UI Components
-│   ├── MainTabView.swift         # Main tab view with two tabs
-│   ├── PixelateView.swift        # Photo picker and pixelation functionality
-│   ├── GenerateView.swift         # Model selection and image generation
-│   ├── CostPreviewView.swift     # Cost preview component
-│   ├── ImageDisplayView.swift    # Reusable image display
-│   ├── SaveImageButton.swift     # Save to photos button
-│   ├── EmptyStateView.swift      # Empty state component
-│   ├── PrimaryButton.swift       # Primary action button
-│   ├── ModelPickerView.swift     # Model selection picker
-│   ├── PromptInputView.swift     # Prompt text input
-│   ├── SizeControlsView.swift    # Width/height controls
-│   └── PhotoPickerView.swift     # Photo picker component
+├── actors/                       # Actor-backed services (concurrency-safe)
+│   ├── Networking.swift          # Networking actor
+│   ├── ImageUtils.swift          # Image resizing/base64 actor
+│   ├── ImageSaver.swift          # Photo library saver actor
+│   └── LibraryStore.swift        # SQLite-backed library actor
 │
-├── models/                       # Data Models
-│   └── Models.swift              # API request/response models, RetroDiffusionModel enum
+├── library/                      # Library UI + client
+│   ├── LibraryClient.swift       # @MainActor wrapper for paging/caching over LibraryStore
+│   ├── LibraryView.swift         # Library grid with paging
+│   ├── LibraryThumbnailView.swift# Async thumbnail loading
+│   └── LibraryDetailView.swift   # Full-size view/share
 │
-├── networking/                    # Networking Layer
-│   └── Networking.swift          # @Observable service for API communication
+├── networking/                   # Networking client layer
+│   └── NetworkClient.swift       # @MainActor wrapper over Networking actor
 │
-└── utils/                        # Utilities
-    ├── ConfigLoader.swift         # Load API key from Config.plist
-    ├── ImageUtils.swift           # Image resizing and base64 conversion
-    └── ImageSaver.swift           # Save images to photo library
+├── components/                   # Shared UI components
+│   └── …                         # Pixelate/Generate tabs, controls, etc.
+│
+├── models/                       # Data models
+│   └── Models.swift
+│
+└── utils/                        # Misc constants/config
+    └── Constants.swift
 ```
 
 ## Usage
